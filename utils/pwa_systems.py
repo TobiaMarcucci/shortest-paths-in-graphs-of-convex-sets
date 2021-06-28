@@ -5,7 +5,6 @@ from utils.convex_functions import Constant, SquaredTwoNorm
 from utils.graph import GraphOfConvexSets
 from utils.shortest_path import ShortestPathProblem
 
-
 class PieceWiseAffineSystem():
     '''Dynamical system of the form
         z(k+1) = Ai z(k) + Bi u(k) + ci if (z(k), u(k)) in Di

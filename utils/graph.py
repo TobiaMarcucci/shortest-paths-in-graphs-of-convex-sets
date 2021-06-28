@@ -104,16 +104,25 @@ class GraphOfConvexSets():
     def set_edge_length(self, edge, length):
         self.lengths[edge] = length
 
-    def _edge_indices(self, edges):
+    def edge_index(self, edge):
+        return self.edges.index(edge)
+
+    def edge_indices(self, edges):
         return [self.edges.index(edge) for edge in edges]
+
+    def vertex_index(self, vertex):
+        return self.vertices.index(vertex)
+
+    def vertex_indices(self, vertices):
+        return [self.vertices.index(vertex) for vertex in vertices]
 
     def incoming_edges(self, vertex):
         edges = [edge for edge in self.edges if edge[1] == vertex]
-        return edges, self._edge_indices(edges)
+        return edges, self.edge_indices(edges)
 
     def outgoing_edges(self, vertex):
         edges = [edge for edge in self.edges if edge[0] == vertex]
-        return edges, self._edge_indices(edges)
+        return edges, self.edge_indices(edges)
 
     def incident_edges(self, vertex):
         incomings = self.incoming_edges(vertex)
