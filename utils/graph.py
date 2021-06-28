@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from copy import deepcopy
 from utils.convex_sets import ConvexSet
-from utils.convex_functions import ConvexFunction
+from utils.convex_functions import ConvexFunction, Constant
 from graphviz import Digraph
 
 class GraphOfConvexSets():
@@ -31,6 +31,8 @@ class GraphOfConvexSets():
 
         if vertices is None:
             vertices = [None] * len(sets)
+        else:
+            assert len(sets) == len(vertices)
 
         for i, set in enumerate(sets):
             vertices[i] = self.add_set(set, vertices[i])
@@ -44,13 +46,22 @@ class GraphOfConvexSets():
             if vertex in edge:
                 self.remove_edge(edge)
         
-    def add_edge(self, u, v, length):
+    def add_edge(self, u, v, length=None):
+
+        if length is None:
+            length = Constant(0)
 
         assert u in self.sets and v in self.sets
         assert isinstance(length, ConvexFunction)
         self.lengths[(u, v)] = length
 
-    def add_edges(self, us, vs, lengths):
+    def add_edges(self, us, vs, lengths=None):
+
+        assert len(us) == len(vs)
+        if lengths is None:
+            lengths = [None] * len(us)
+        else:
+            assert len(us) == len(lengths)
 
         for u, v, length in zip(us, vs, lengths):
             self.add_edge(u, v, length)
