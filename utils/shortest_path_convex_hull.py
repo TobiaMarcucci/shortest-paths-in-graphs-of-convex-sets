@@ -38,10 +38,11 @@ class ShortestPathConstraints():
     @staticmethod
     def populate_program(prog, graph, vars, relaxation=False):
 
+        # loop through the vertices, not source nor target
         for vertex, set in graph.sets.items():
-
             if vertex != graph.source and vertex != graph.target:
 
+                # indices of the edges incident with this vertex
                 edges_in = graph.incoming_edges(vertex)[1]
                 edges_out = graph.outgoing_edges(vertex)[1]
 
@@ -53,25 +54,26 @@ class ShortestPathConstraints():
                     alpha = prog.NewBinaryVariables(len(edges_in), len(edges_out))
                 prog.AddLinearConstraint(alpha.sum() <= 1)
 
-                # reconstruct flows
+                # relate flows phi and alpha
                 for j, k in enumerate(edges_in):
                     prog.AddLinearConstraint(vars.phi[k] == alpha[j].sum())
                 for j, k in enumerate(edges_out):
                     prog.AddLinearConstraint(vars.phi[k] == alpha[:, j].sum())
 
-                # auxiliary spatial variables
+                # auxiliary copies of the vertex positions
                 x_aux = np.array([prog.NewContinuousVariables(len(edges_out), graph.dimension) for _ in edges_in])
                 for j, k in enumerate(edges_in):
                     prog.AddLinearConstraint(eq(vars.z[k], x_aux[j].sum(axis=0)))
                 for j, k in enumerate(edges_out):
                     prog.AddLinearConstraint(eq(vars.y[k], x_aux[:, j].sum(axis=0)))
 
-                # spatial constraints
+                # relate vertex positions and auxiliary variables
                 i = graph.vertex_index(vertex)
                 argument = vars.x[i] - x_aux.sum(axis=0).sum(axis=0)
                 scaling = 1 - alpha.sum()
                 set.add_perspective_constraint(prog, scaling, argument)
 
+                # membership of the auxiliary variables
                 for j in range(len(edges_in)):
                     for k in range(len(edges_out)):
                         set.add_perspective_constraint(prog, alpha[j, k], x_aux[j, k])
@@ -121,8 +123,6 @@ class ShortestPathSolution():
 class ShortestPathProblem():
 
     def __init__(self, graph, relaxation=False):
-
-        print('using ch')
 
         self.graph = graph
         self.relaxation = relaxation

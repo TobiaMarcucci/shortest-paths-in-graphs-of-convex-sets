@@ -144,7 +144,7 @@ class ShortestPathProblem():
         self.constraints = ShortestPathConstraints.populate_program(self.prog, graph, self.vars)
         self.prog.AddLinearCost(sum(self.vars.l))
 
-    def solve(self): # relaxation should really be an argument of this
+    def solve(self):
 
         result = MosekSolver().Solve(self.prog)
         cost = result.get_optimal_cost()

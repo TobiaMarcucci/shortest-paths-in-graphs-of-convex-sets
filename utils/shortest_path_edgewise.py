@@ -39,42 +39,47 @@ class ShortestPathConstraints():
     @staticmethod
     def populate_program(prog, graph, vars):
 
-        for vertex, set in graph.sets.items():
+        # loop through the vertices
+        for v, Xv in graph.sets.items():
 
-            edges_in = graph.incoming_edges(vertex)[1]
-            edges_out = graph.outgoing_edges(vertex)[1]
+            # indices of the edges incident with this vertex
+            edges_in = graph.incoming_edges(v)[1]
+            edges_out = graph.outgoing_edges(v)[1]
 
+            # incident flow variables
             phi_in = sum(vars.phi[edges_in])
             phi_out = sum(vars.phi[edges_out])
 
-            delta_sv = 1 if vertex == graph.source else 0
-            delta_tv = 1 if vertex == graph.target else 0
+            # indicators for source and target
+            delta_sv = 1 if v == graph.source else 0
+            delta_tv = 1 if v == graph.target else 0
 
             # conservation of flow
             if len(edges_in) > 0 or len(edges_out) > 0:
                 residual = phi_out + delta_tv - phi_in - delta_sv
                 prog.AddLinearConstraint(residual == 0)
 
-            # degree constraints
+            # degree constraint
             if len(edges_out) > 0:
                 residual = phi_out + delta_tv - 1
                 prog.AddLinearConstraint(residual <= 0)
 
-        for k, edge in enumerate(graph.edges):
+        # loop through the edges
+        for k, e in enumerate(graph.edges):
 
             # spatial nonnegativity
-            graph.sets[edge[0]].add_perspective_constraint(prog, vars.phi[k], vars.y[k])
-            graph.sets[edge[1]].add_perspective_constraint(prog, vars.phi[k], vars.z[k])
+            Xu, Xv = [graph.sets[v] for v in e]
+            Xu.add_perspective_constraint(prog, vars.phi[k], vars.y[k])
+            Xv.add_perspective_constraint(prog, vars.phi[k], vars.z[k])
 
             # spatial upper bound
-            xu = vars.x[graph.vertices.index(edge[0])]
-            xv = vars.x[graph.vertices.index(edge[1])]
-            graph.sets[edge[0]].add_perspective_constraint(prog, 1 - vars.phi[k], xu - vars.y[k])
-            graph.sets[edge[1]].add_perspective_constraint(prog, 1 - vars.phi[k], xv - vars.z[k])
+            xu, xv = vars.x[graph.vertex_indices(e)]
+            Xu.add_perspective_constraint(prog, 1 - vars.phi[k], xu - vars.y[k])
+            Xv.add_perspective_constraint(prog, 1 - vars.phi[k], xv - vars.z[k])
 
-            # slack constraints for the objetive (not stored)
+            # slack constraints for the objetive
             yz = np.concatenate((vars.y[k], vars.z[k]))
-            graph.lengths[edge].add_perspective_constraint(prog, vars.l[k], vars.phi[k], yz)
+            graph.lengths[e].add_perspective_constraint(prog, vars.l[k], vars.phi[k], yz)
 
 class ShortestPathSolution():
 

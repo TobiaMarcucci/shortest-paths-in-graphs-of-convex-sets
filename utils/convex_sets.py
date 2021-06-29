@@ -2,7 +2,6 @@ import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from copy import deepcopy
 from itertools import product
 from scipy.spatial import ConvexHull, HalfspaceIntersection
 from pydrake.all import Expression, MathematicalProgram, MosekSolver, eq, le
