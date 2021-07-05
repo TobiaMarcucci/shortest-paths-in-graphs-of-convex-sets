@@ -1,0 +1,78 @@
+Gurobi Optimizer version 9.0.2 build v9.0.2rc0 (mac64)
+Optimize a model with 80594 rows, 28922 columns and 202331 nonzeros
+Model fingerprint: 0x86ab4234
+Model has 1379 quadratic constraints
+Variable types: 27536 continuous, 1386 integer (1386 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 7e+00]
+  QMatrix range    [1e+00, 1e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [5e-01, 7e+00]
+Presolve removed 77976 rows and 27925 columns
+Presolve time: 0.20s
+
+Q matrix is non-PSD after presolve substitutions
+Trying again without substitutions in Q matrices...
+
+Presolve removed 77974 rows and 27923 columns
+Presolve time: 0.22s
+Presolved: 2623 rows, 1002 columns, 7371 nonzeros
+Presolved model has 2 SOS constraint(s)
+Presolved model has 76 quadratic constraint(s)
+Variable types: 945 continuous, 57 integer (57 binary)
+
+Root relaxation: objective 0.000000e+00, 792 iterations, 0.02 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.00000    0    1          -    0.00000      -     -    0s
+     0     0    0.00000    0   11          -    0.00000      -     -    0s
+     0     0    0.00000    0    7          -    0.00000      -     -    0s
+     0     0    0.00000    0    7          -    0.00000      -     -    0s
+     0     0    0.00000    0   20          -    0.00000      -     -    0s
+     0     0    0.00000    0   18          -    0.00000      -     -    0s
+     0     0    0.90865    0   13          -    0.90865      -     -    0s
+     0     0    0.90865    0   13          -    0.90865      -     -    0s
+     0     0    2.26661    0   19          -    2.26661      -     -    0s
+     0     0    2.26661    0   19          -    2.26661      -     -    0s
+     0     0    3.31875    0   19          -    3.31875      -     -    0s
+     0     0    3.34594    0   20          -    3.34594      -     -    0s
+     0     0    4.05736    0   24          -    4.05736      -     -    0s
+     0     0    4.07943    0   24          -    4.07943      -     -    0s
+     0     0    4.60059    0   24          -    4.60059      -     -    0s
+     0     0    4.61495    0   24          -    4.61495      -     -    0s
+     0     0    5.01527    0   24          -    5.01527      -     -    0s
+     0     0    5.02633    0   24          -    5.02633      -     -    0s
+     0     0    5.25902    0   24          -    5.25902      -     -    0s
+     0     0    5.29180    0   24          -    5.29180      -     -    0s
+     0     0    5.39097    0   24          -    5.39097      -     -    0s
+     0     0    5.39316    0   23          -    5.39316      -     -    0s
+     0     0    5.45783    0   24          -    5.45783      -     -    0s
+     0     0    5.45887    0   24          -    5.45887      -     -    0s
+     0     0    5.52789    0   24          -    5.52789      -     -    0s
+     0     0    5.52885    0   24          -    5.52885      -     -    0s
+     0     0    5.56359    0   24          -    5.56359      -     -    0s
+H    0     0                      11.2073130    5.56359  50.4%     -    1s
+H    0     0                       9.9223404    5.56359  43.9%     -    1s
+     0     2    5.73533    0   24    9.92234    5.73533  42.2%     -    1s
+H   33    16                       9.8287244    6.31390  35.8%  80.5    1s
+H  183     2                       9.7420132    9.67696  0.67%  45.7    1s
+*  183     2               7       9.7420132    9.67696  0.67%  45.7    1s
+
+Cutting planes:
+  MIR: 38
+  Flow cover: 29
+  RLT: 87
+  Relax-and-lift: 2
+  BQP: 6
+
+Explored 195 nodes (13927 simplex iterations) in 1.53 seconds
+Thread count was 16 (of 16 available processors)
+
+Solution count 4: 9.74201 9.82872 9.92234 11.2073
+
+Optimal solution found (tolerance 1.00e-04)
+Warning: max constraint violation (2.1184e-05) exceeds tolerance
+Best objective 9.742013159293e+00, best bound 9.741082544709e+00, gap 0.0096%

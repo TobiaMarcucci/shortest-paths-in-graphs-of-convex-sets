@@ -3,7 +3,7 @@ import scipy as sp
 from utils.convex_sets import Singleton, Polyhedron, CartesianProduct
 from utils.convex_functions import Constant, SquaredTwoNorm
 from utils.graph import GraphOfConvexSets
-from utils.shortest_path import ShortestPathProblem
+from utils.shortest_path_edgewise import ShortestPathProblem
 
 class PieceWiseAffineSystem():
     '''Dynamical system of the form
@@ -31,7 +31,7 @@ class RegulationSolution():
 
 class ShortestPathRegulator():
 
-    def __init__(self, pwa, K, z1, Z, cost_matrices, relaxation=False):
+    def __init__(self, pwa, K, z1, Z, cost_matrices, solver, relaxation=False):
 
         self.pwa = pwa
         self.K = K
@@ -39,7 +39,7 @@ class ShortestPathRegulator():
         self.Z = Z
         self.Q, self.R, self.S = cost_matrices
         graph = self._construct_graph()
-        self.spp = ShortestPathProblem(graph, relaxation)
+        self.spp = ShortestPathProblem(graph, solver, relaxation)
 
     def _construct_graph(self):
 

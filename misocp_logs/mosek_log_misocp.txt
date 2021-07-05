@@ -1,0 +1,71 @@
+
+File opened at Tue Jun 29 13:04:42 2021 by MOSEK version 9.2.33.
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 80594           
+  Cones                  : 1379            
+  Scalar variables       : 28922           
+  Matrix variables       : 0               
+  Integer variables      : 1386            
+
+Optimizer started.
+Mixed integer optimizer started.
+Threads used: 16
+Presolve started.
+Presolve terminated. Time = 0.48
+Presolved problem: 1582 variables, 4324 constraints, 10971 non-zeros
+Presolved problem: 0 general integer, 94 binary, 1488 continuous
+Clique table size: 50
+BRANCHES RELAXS   ACT_NDS  DEPTH    BEST_INT_OBJ         BEST_RELAX_OBJ       REL_GAP(%)  TIME  
+0        1        1        0        NA                   8.0000001408e-01     NA          0.7   
+Cut generation started.
+0        1        1        0        NA                   8.0000001402e-01     NA          0.9   
+Cut generation terminated. Time = 0.00
+10       14       11       1        NA                   8.0525936936e-01     NA          1.4   
+25       27       22       3        NA                   8.0525936936e-01     NA          1.5   
+41       41       34       4        NA                   8.0525936936e-01     NA          1.6   
+64       59       45       6        NA                   8.0525936936e-01     NA          1.7   
+96       81       57       7        NA                   8.0525936936e-01     NA          1.9   
+144      116      75       6        NA                   8.0525936936e-01     NA          2.1   
+208      143      59       7        NA                   8.0525936936e-01     NA          2.3   
+256      172      69       5        NA                   9.2709582865e-01     NA          2.5   
+318      201      57       9        NA                   9.2709582865e-01     NA          2.7   
+366      231      69       10       NA                   9.2709582865e-01     NA          2.9   
+430      264      63       6        NA                   9.2712595461e-01     NA          3.2   
+478      293      71       11       NA                   9.2712595461e-01     NA          3.4   
+542      333      83       11       1.0837113732e+01     1.4014459056e+00     87.07       3.6   
+622      375      77       7        1.0507899188e+01     2.5114378057e+00     76.10       4.0   
+686      414      81       10       1.0393370654e+01     2.5114378057e+00     75.84       4.2   
+766      455      67       7        9.6433581213e+00     3.0327185077e+00     68.55       4.5   
+830      495      67       12       9.0768283675e+00     3.0327185077e+00     66.59       4.8   
+894      535      53       10       8.6277376006e+00     3.2945455852e+00     61.81       5.0   
+940      557      35       11       8.6277376006e+00     3.2945455852e+00     61.81       5.2   
+966      569      27       11       8.6277376006e+00     4.0151297036e+00     53.46       5.2   
+986      580      23       13       8.6277376006e+00     4.0151297036e+00     53.46       5.3   
+1004     588      13       15       8.6225773694e+00     4.0151297036e+00     53.43       5.4   
+1025     599      0        14       8.6225773694e+00     8.6225773694e+00     0.00e+00    5.6   
+An optimal solution satisfying the relative gap tolerance of 1.00e-02(%) has been located.
+The relative gap is 0.00e+00(%).
+An optimal solution satisfying the absolute gap tolerance of 0.00e+00 has been located.
+The absolute gap is 0.00e+00.
+
+Objective of best integer solution : 8.622577369365e+00      
+Best objective bound               : 8.622577369365e+00      
+Construct solution objective       : Not employed
+User objective cut value           : Not employed
+Number of cuts generated           : 0
+Number of branches                 : 1025
+Number of relaxations solved       : 599
+Number of interior point iterations: 14085
+Number of simplex iterations       : 0
+Time spend presolving the root     : 0.48
+Time spend optimizing the root     : 0.12
+Mixed integer optimizer terminated. Time: 5.57
+
+Optimizer terminated. Time: 5.72    
+
+
+File closed: Tue Jun 29 13:04:48 2021
+

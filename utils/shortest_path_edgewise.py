@@ -1,5 +1,5 @@
 import numpy as np
-from pydrake.all import MathematicalProgram, MosekSolver
+from pydrake.all import MathematicalProgram
 
 class ShortestPathVariables():
 
@@ -15,11 +15,11 @@ class ShortestPathVariables():
     def populate_program(prog, graph, relaxation=False):
 
         phi_type = prog.NewContinuousVariables if relaxation else prog.NewBinaryVariables
-        phi = phi_type(graph.n_edges)
-        y = prog.NewContinuousVariables(graph.n_edges, graph.dimension)
-        z = prog.NewContinuousVariables(graph.n_edges, graph.dimension)
-        l = prog.NewContinuousVariables(graph.n_edges)
-        x = prog.NewContinuousVariables(graph.n_sets, graph.dimension)
+        phi = phi_type(graph.n_edges, name='phi')
+        y = prog.NewContinuousVariables(graph.n_edges, graph.dimension, name='y')
+        z = prog.NewContinuousVariables(graph.n_edges, graph.dimension, name='z')
+        l = prog.NewContinuousVariables(graph.n_edges, name='l')
+        x = prog.NewContinuousVariables(graph.n_sets, graph.dimension, name='x')
 
         return ShortestPathVariables(phi, y, z, l, x)
 
@@ -92,9 +92,10 @@ class ShortestPathSolution():
 
 class ShortestPathProblem():
 
-    def __init__(self, graph, relaxation=False):
+    def __init__(self, graph, solver, relaxation=False):
 
         self.graph = graph
+        self.solver = solver
         self.relaxation = relaxation
 
         self.prog = MathematicalProgram()
@@ -104,7 +105,7 @@ class ShortestPathProblem():
 
     def solve(self):
 
-        result = MosekSolver().Solve(self.prog)
+        result = self.solver.Solve(self.prog)
         cost = result.get_optimal_cost()
         time = result.get_solver_details().optimizer_time
         primal = ShortestPathVariables.from_result(result, self.vars)

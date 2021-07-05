@@ -1,0 +1,83 @@
+
+File opened at Tue Jun 29 13:06:15 2021 by MOSEK version 9.2.33.
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 80594           
+  Cones                  : 1379            
+  Scalar variables       : 28922           
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer started.
+Presolve started.
+Linear dependency checker started.
+Linear dependency checker terminated.
+Eliminator started.
+Freed constraints in eliminator : 5562
+Eliminator terminated.
+Eliminator started.
+Freed constraints in eliminator : 0
+Eliminator terminated.
+Eliminator - tries                  : 2                 time                   : 0.00            
+Lin. dep.  - tries                  : 1                 time                   : 0.01            
+Lin. dep.  - number                 : 0               
+Presolve terminated. Time: 0.09    
+GP based matrix reordering started.
+GP based matrix reordering terminated.
+Problem
+  Name                   :                 
+  Objective sense        : min             
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 80594           
+  Cones                  : 1379            
+  Scalar variables       : 28922           
+  Matrix variables       : 0               
+  Integer variables      : 0               
+
+Optimizer  - threads                : 16              
+Optimizer  - solved problem         : the dual        
+Optimizer  - Constraints            : 13583
+Optimizer  - Cones                  : 1380
+Optimizer  - Scalar variables       : 74741             conic                  : 8465            
+Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
+Factor     - setup time             : 0.23              dense det. time        : 0.08            
+Factor     - ML order time          : 0.02              GP order time          : 0.07            
+Factor     - nonzeros before factor : 8.74e+04          after factor           : 2.87e+05        
+Factor     - dense dim.             : 2                 flops                  : 2.45e+07        
+ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
+0   1.6e+01  1.3e+00  2.0e+03  0.00e+00   1.950200503e+03   0.000000000e+00   1.0e+00  0.35  
+1   1.5e+01  1.2e+00  1.7e+03  5.78e-01   1.888098160e+03   1.029127667e+02   9.3e-01  0.38  
+2   1.4e+01  1.1e+00  1.5e+03  6.68e-01   1.836930436e+03   1.797041339e+02   8.8e-01  0.42  
+3   1.3e+01  1.1e+00  1.4e+03  7.14e-01   1.758598881e+03   2.128475401e+02   8.3e-01  0.45  
+4   1.1e+01  9.0e-01  1.0e+03  7.12e-01   1.572351705e+03   2.898951223e+02   6.9e-01  0.48  
+5   9.2e+00  7.4e-01  7.8e+02  7.42e-01   1.388619228e+03   3.128745866e+02   5.7e-01  0.52  
+6   6.2e+00  5.0e-01  4.4e+02  7.08e-01   9.956405468e+02   2.374444878e+02   3.9e-01  0.55  
+7   2.8e+00  2.3e-01  1.3e+02  8.69e-01   4.346006850e+02   8.629489347e+01   1.8e-01  0.58  
+8   1.4e+00  1.1e-01  4.6e+01  1.05e+00   1.814521715e+02   1.334116815e+01   8.9e-02  0.62  
+9   8.5e-01  6.9e-02  2.1e+01  1.14e+00   9.237663363e+01   -2.968934327e+00  5.3e-02  0.65  
+10  5.4e-01  4.4e-02  1.0e+01  1.16e+00   5.247179590e+01   -5.424426763e+00  3.4e-02  0.68  
+11  2.7e-01  2.2e-02  3.6e+00  1.13e+00   2.427274115e+01   -3.478289686e+00  1.7e-02  0.72  
+12  1.2e-01  1.0e-02  1.1e+00  1.07e+00   1.243434811e+01   -2.491574566e-01  7.8e-03  0.75  
+13  3.6e-02  2.9e-03  1.8e-01  1.02e+00   5.656091494e+00   1.963252165e+00   2.3e-03  0.78  
+14  8.3e-03  6.7e-04  2.0e-02  1.01e+00   3.057023476e+00   2.211063920e+00   5.2e-04  0.82  
+15  2.6e-03  2.1e-04  3.3e-03  1.00e+00   1.184780749e+00   9.226098415e-01   1.6e-04  0.85  
+16  3.6e-04  2.9e-05  1.7e-04  1.00e+00   8.548317102e-01   8.186398383e-01   2.2e-05  0.88  
+17  6.6e-05  5.3e-06  1.4e-05  1.00e+00   8.128536215e-01   8.061832677e-01   4.1e-06  0.92  
+18  1.5e-05  1.2e-06  1.4e-06  1.00e+00   8.031053169e-01   8.016059002e-01   9.2e-07  0.95  
+19  3.3e-06  2.7e-07  1.5e-07  1.00e+00   8.007219934e-01   8.003834127e-01   2.1e-07  0.98  
+20  7.4e-07  6.0e-08  1.6e-08  1.00e+00   8.001621809e-01   8.000872021e-01   4.6e-08  1.02  
+21  3.1e-07  1.4e-08  1.9e-09  1.00e+00   8.000397278e-01   8.000214840e-01   1.1e-08  1.05  
+22  9.5e-07  1.9e-08  2.0e-10  1.00e+00   8.000087893e-01   8.000047640e-01   2.5e-09  1.08  
+23  4.2e-06  3.1e-08  1.1e-10  1.00e+00   8.000059093e-01   8.000031945e-01   1.7e-09  1.17  
+24  1.1e-05  8.6e-09  1.6e-11  1.00e+00   8.000015864e-01   8.000008509e-01   4.5e-10  1.23  
+25  3.8e-05  4.8e-09  3.3e-12  1.00e+00   8.000005576e-01   8.000002971e-01   1.6e-10  1.30  
+26  1.1e-04  2.0e-09  8.4e-13  1.00e+00   8.000002231e-01   8.000001181e-01   6.4e-11  1.34  
+27  2.7e-04  7.5e-10  1.8e-13  1.00e+00   8.000000783e-01   8.000000412e-01   2.3e-11  1.36  
+28  8.3e-04  4.1e-10  2.7e-14  1.00e+00   8.000000222e-01   8.000000117e-01   6.4e-12  1.39  
+Optimizer terminated. Time: 1.40    
+
+
+File closed: Tue Jun 29 13:06:17 2021
+
