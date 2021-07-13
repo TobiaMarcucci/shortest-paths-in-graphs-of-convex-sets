@@ -105,6 +105,10 @@ class ShortestPathProblem():
 
     def solve(self):
 
+        # fixes Mosek's bug
+        import mosek
+        self.prog.SetSolverOption(self.solver.solver_id(), 'MSK_IPAR_INTPNT_SOLVE_FORM', mosek.solveform.primal)
+        
         result = self.solver.Solve(self.prog)
         cost = result.get_optimal_cost()
         time = result.get_solver_details().optimizer_time
