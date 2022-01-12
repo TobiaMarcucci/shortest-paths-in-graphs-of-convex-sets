@@ -82,15 +82,12 @@ class GraphOfConvexSets():
 
     def self_transition(self, vertex, self_length, vertex_copy=None):
 
-        if vertex_copy is None:
-            vertex_copy = str(vertex) + "'"
-
-        self.add_set(self.sets[vertex], vertex_copy)
+        vertex_copy = self.add_set(self.sets[vertex], vertex_copy)
         self.add_edge(vertex_copy, vertex, self_length)
 
-        for edge, length in self.lengths.items():
-            if edge[1] == vertex:
-                self.add_edge(e[0], vertex_copy, length)
+        incomings = [edge for edge in self.edges if edge[1] == vertex]
+        for edge in incomings:
+            self.add_edge(edge[0], vertex_copy, self.lengths[edge])
 
         return vertex_copy
 
