@@ -105,6 +105,38 @@ class ShortestPathConstraints():
             yz = np.concatenate((vars.y[k], vars.z[k]))
             graph.lengths[edge].add_perspective_constraint(prog, vars.l[k], vars.phi[k], yz)
 
+            # # subtour elimination for 2-cycles
+            # if graph.source not in edge and graph.target not in edge:
+            #     for f in graph.edges[k+1:]:
+            #         if edge[::-1] == f:
+
+            #             u_in = graph.incoming_edges(edge[0])[1]
+            #             v_in = graph.incoming_edges(edge[1])[1]
+
+            #             l = graph.edges.index(f)
+            #             phi_e = vars.phi[k]
+            #             phi_f = vars.phi[l]
+
+            #             phi_u = sum(vars.phi[u_in]) - phi_e - phi_f
+            #             phi_v = sum(vars.phi[v_in]) - phi_e - phi_f
+
+            #             prog.AddLinearConstraint(phi_u >= 0)
+            #             prog.AddLinearConstraint(phi_v >= 0)
+
+            #             z_u = sum(vars.z[u_in])
+            #             z_v = sum(vars.z[v_in])
+
+            #             graph.sets[edge[0]].add_perspective_constraint(
+            #                 prog,
+            #                 phi_u,
+            #                 z_u - vars.y[k] - vars.z[l]
+            #                 )
+            #             graph.sets[edge[1]].add_perspective_constraint(
+            #                 prog,
+            #                 phi_v,
+            #                 z_v - vars.z[k] - vars.y[l]
+            #                 )
+
         return ShortestPathConstraints(cons, deg, sp_cons)
 
     @staticmethod

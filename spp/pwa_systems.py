@@ -1,9 +1,9 @@
 import numpy as np
 import scipy as sp
-from utils.convex_sets import Singleton, Polyhedron, CartesianProduct
-from utils.convex_functions import Constant, SquaredTwoNorm
-from utils.graph import GraphOfConvexSets
-from utils.shortest_path import ShortestPathProblem
+from spp.convex_sets import Singleton, Polyhedron, CartesianProduct
+from spp.convex_functions import Constant, SquaredTwoNorm
+from spp.graph import GraphOfConvexSets
+from spp.shortest_path import ShortestPathProblem
 
 class PieceWiseAffineSystem():
     '''Dynamical system of the form

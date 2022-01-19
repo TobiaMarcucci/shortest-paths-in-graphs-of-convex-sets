@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from copy import deepcopy
-from utils.convex_sets import ConvexSet
-from utils.convex_functions import ConvexFunction, Constant
+from spp.convex_sets import ConvexSet
+from spp.convex_functions import ConvexFunction, Constant
 from graphviz import Digraph
 
 class GraphOfConvexSets():
