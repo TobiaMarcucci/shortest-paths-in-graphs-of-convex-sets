@@ -30,6 +30,13 @@ class ConvexSet():
     def add_membership_constraint(self, prog, x):
         return self.add_perspective_constraint(prog, 1, x)
 
+    def intersects_with(self, set):
+        prog = MathematicalProgram()
+        x = prog.NewContinuousVariables(self.dimension)
+        self.add_membership_constraint(prog, x)
+        set.add_membership_constraint(prog, x)
+        return MosekSolver().Solve(prog).is_success()
+
     def plot(self, **kwargs):
         if self.dimension != 2:
             raise NotImplementedError
@@ -47,6 +54,32 @@ class ConvexSet():
         if self._center is None:
             self._center = self._compute_center()
         return self._center
+
+class Rn(ConvexSet):
+    '''R^n.'''
+
+    def __init__(self, n):
+        self._center = np.zeros(n)
+        self._dimension = n
+
+    def contains(self, x):
+        return True
+
+    def translate(self, x):
+        pass
+
+    def _scale(self, s):
+        pass
+
+    def add_perspective_constraint(self, prog, scale, x):
+        pass
+
+    def _plot(self, **kwargs):
+        raise NotImplementedError
+
+    def _cheb_constraint(self, prog, x, r):
+        pass
+        
 
 class Singleton(ConvexSet):
     '''Singleton set {x}.'''

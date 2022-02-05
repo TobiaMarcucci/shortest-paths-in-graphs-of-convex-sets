@@ -61,7 +61,7 @@ class ShortestPathConstraints():
         self.objective = obj
 
     @staticmethod
-    def populate_program(prog, graph, vars):
+    def populate_program(prog, graph, vars, two_cycle_elimination=False):
 
         # containers for the constraints we want to keep track of
         cons = []
@@ -105,37 +105,39 @@ class ShortestPathConstraints():
             yz = np.concatenate((vars.y[k], vars.z[k]))
             graph.lengths[edge].add_perspective_constraint(prog, vars.l[k], vars.phi[k], yz)
 
-            # # subtour elimination for 2-cycles
-            # if graph.source not in edge and graph.target not in edge:
-            #     for f in graph.edges[k+1:]:
-            #         if edge[::-1] == f:
+            # subtour elimination for 2-cycles
+            if two_cycle_elimination:
 
-            #             u_in = graph.incoming_edges(edge[0])[1]
-            #             v_in = graph.incoming_edges(edge[1])[1]
+                if graph.source not in edge and graph.target not in edge:
+                    for f in graph.edges[k+1:]:
+                        if edge[::-1] == f:
 
-            #             l = graph.edges.index(f)
-            #             phi_e = vars.phi[k]
-            #             phi_f = vars.phi[l]
+                            u_in = graph.incoming_edges(edge[0])[1]
+                            v_in = graph.incoming_edges(edge[1])[1]
 
-            #             phi_u = sum(vars.phi[u_in]) - phi_e - phi_f
-            #             phi_v = sum(vars.phi[v_in]) - phi_e - phi_f
+                            l = graph.edges.index(f)
+                            phi_e = vars.phi[k]
+                            phi_f = vars.phi[l]
 
-            #             prog.AddLinearConstraint(phi_u >= 0)
-            #             prog.AddLinearConstraint(phi_v >= 0)
+                            phi_u = sum(vars.phi[u_in]) - phi_e - phi_f
+                            phi_v = sum(vars.phi[v_in]) - phi_e - phi_f
 
-            #             z_u = sum(vars.z[u_in])
-            #             z_v = sum(vars.z[v_in])
+                            prog.AddLinearConstraint(phi_u >= 0)
+                            prog.AddLinearConstraint(phi_v >= 0)
 
-            #             graph.sets[edge[0]].add_perspective_constraint(
-            #                 prog,
-            #                 phi_u,
-            #                 z_u - vars.y[k] - vars.z[l]
-            #                 )
-            #             graph.sets[edge[1]].add_perspective_constraint(
-            #                 prog,
-            #                 phi_v,
-            #                 z_v - vars.z[k] - vars.y[l]
-            #                 )
+                            z_u = sum(vars.z[u_in])
+                            z_v = sum(vars.z[v_in])
+
+                            graph.sets[edge[0]].add_perspective_constraint(
+                                prog,
+                                phi_u,
+                                z_u - vars.y[k] - vars.z[l]
+                                )
+                            graph.sets[edge[1]].add_perspective_constraint(
+                                prog,
+                                phi_v,
+                                z_v - vars.z[k] - vars.y[l]
+                                )
 
         return ShortestPathConstraints(cons, deg, sp_cons)
 
@@ -157,23 +159,25 @@ class ShortestPathConstraints():
 
 class ShortestPathSolution():
 
-    def __init__(self, cost, time, primal, dual):
+    def __init__(self, cost, time, primal, dual, path):
 
         self.cost = cost
         self.time = time
         self.primal = primal
         self.dual = dual
+        self.path = path
 
 class ShortestPathProblem():
 
-    def __init__(self, graph, relaxation=False):
+    def __init__(self, graph, relaxation=False, two_cycle_elimination=False):
 
         self.graph = graph
         self.relaxation = relaxation
+        self.two_cycle_elimination = two_cycle_elimination
 
         self.prog = MathematicalProgram()
         self.vars = ShortestPathVariables.populate_program(self.prog, graph, relaxation)
-        self.constraints = ShortestPathConstraints.populate_program(self.prog, graph, self.vars)
+        self.constraints = ShortestPathConstraints.populate_program(self.prog, graph, self.vars, two_cycle_elimination)
         self.prog.AddLinearCost(sum(self.vars.l))
 
     def solve(self):
@@ -183,6 +187,15 @@ class ShortestPathProblem():
         time = result.get_solver_details().optimizer_time
         primal = ShortestPathVariables.from_result(result, self.vars)
         primal.reconstruct_x(self.graph)
-        dual = ShortestPathConstraints.from_result(result, self.constraints) if self.relaxation else None
+        if self.relaxation and not self.two_cycle_elimination:
+            dual = ShortestPathConstraints.from_result(result, self.constraints)
+        else:
+            dual =  None
+        edges_on_path = [self.graph.edges[k] for k, phi in enumerate(primal.phi) if phi > 1.e-4]
+        path = [self.graph.source]
+        for i in range(len(edges_on_path) + 1):
+            for e in edges_on_path:
+                if e[0] == path[i]:
+                    path.append(e[1])
 
-        return ShortestPathSolution(cost, time, primal, dual)
+        return ShortestPathSolution(cost, time, primal, dual, path)
