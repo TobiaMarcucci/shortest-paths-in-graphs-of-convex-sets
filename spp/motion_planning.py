@@ -54,11 +54,14 @@ class Bezier():
 
     def __init__(self, points):
         self.points = points
-        self.deg = points.shape[0] - 1
+        self.n = points.shape[0] - 1
 
     def evaluate(self, t):
-        c = np.array([self._berstein(t, i, self.deg) for i in range(self.deg + 1)])
+        c = np.array([self._berstein(t, i, self.n) for i in range(self.n + 1)])
         return c.T.dot(self.points)
+
+    def derivative(self):
+        return Bezier(self.n * (self.points[1:] - self.points[:-1]))
 
     @staticmethod
     def _berstein(t, i, n):
