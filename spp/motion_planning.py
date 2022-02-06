@@ -3,6 +3,7 @@ from spp.convex_functions import Constant
 from spp.convex_sets import Singleton, Polyhedron, CartesianProduct
 from spp.graph import GraphOfConvexSets
 from spp.shortest_path import ShortestPathProblem
+from scipy.special import binom
 
 class MotionPlanner():
 
@@ -48,3 +49,18 @@ class MotionPlanner():
         sol = self.spp.solve()
 
         return sol.primal.x[sol.path].reshape(len(sol.path), self.degree + 1, self.dimension)
+
+class Bezier():
+
+    def __init__(self, points):
+        self.points = points
+        self.deg = points.shape[0] - 1
+
+    def evaluate(self, t):
+        c = np.array([self._berstein(t, i, self.deg) for i in range(self.deg + 1)])
+        return c.T.dot(self.points)
+
+    @staticmethod
+    def _berstein(t, i, n):
+        return binom(n, i) * t ** i * (1 - t) ** (n - i) 
+        
