@@ -1,6 +1,6 @@
 import numpy as np
 from spp.convex_functions import Constant
-from spp.convex_sets import Rn, Singleton, Polyhedron, CartesianProduct
+from spp.convex_sets import Singleton, Polyhedron, CartesianProduct
 from spp.graph import GraphOfConvexSets
 from spp.shortest_path import ShortestPathProblem
 
@@ -48,5 +48,3 @@ class MotionPlanner():
         sol = self.spp.solve()
 
         return sol.primal.x[sol.path].reshape(len(sol.path), self.degree + 1, self.dimension)
-
-
