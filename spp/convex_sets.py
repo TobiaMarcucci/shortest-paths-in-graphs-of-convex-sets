@@ -99,8 +99,11 @@ class Polyhedron(ConvexSet):
 
     def contains(self, x):
 
-        eq_matrices = np.allclose(self.A.dot(x) - self.b, 0)
-        ineq_matrices = np.isclose(max(max(self.C.dot(x) - self.d), 0), 0)
+        residual = self.A.dot(x) - self.b
+        eq_matrices = np.allclose(residual, 0)
+
+        residual = self.C.dot(x) - self.d
+        ineq_matrices = np.isclose(max(max(residual, default=0), 0), 0)
 
         return eq_matrices and ineq_matrices
 

@@ -123,6 +123,6 @@ class ShortestPathRegulator():
             for j, edge in enumerate(self.spp.graph.edges):
                 if edge[1] != self.spp.graph.target:
                     if np.isclose(sol.primal.phi[j], 1):
-                        ms[k - 1] = edge[1][1]
+                        ms[edge[1][0] - 1] = edge[1][1]
 
         return RegulationSolution(z, u, ms, sol)

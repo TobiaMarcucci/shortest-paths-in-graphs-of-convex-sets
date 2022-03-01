@@ -3,6 +3,13 @@ import numpy as np
 class ConvexFunction():
     """Parent class for all the convex functions."""
 
+    def __call__(self, x):
+
+        if self.D is not None and self.D.contains(x):
+            return self._evaluate(x)
+        else:
+            return np.inf
+
     def add_perspective_constraint(self, prog, slack, scale, x):
 
         cost = self._add_perspective_constraint(prog, slack, scale, x)
@@ -22,6 +29,10 @@ class Constant(ConvexFunction):
         self.c = c
         self.D = D
 
+    def _evaluate(self, x):
+
+        return self.c
+
     def _add_perspective_constraint(self, prog, slack, scale, x):
 
         return prog.AddLinearConstraint(slack >= self.c * scale)
@@ -33,6 +44,10 @@ class TwoNorm(ConvexFunction):
 
         self.H = H
         self.D = D
+
+    def _evaluate(self, x):
+
+        return np.linalg.norm(self.H.dot(x))
 
     def _add_perspective_constraint(self, prog, slack, scale, x):
 
@@ -46,6 +61,11 @@ class SquaredTwoNorm(ConvexFunction):
 
         self.H = H
         self.D = D
+
+    def _evaluate(self, x):
+
+        Hx = self.H.dot(x)
+        return Hx.dot(Hx)
 
     def _add_perspective_constraint(self, prog, slack, scale, x):
 
