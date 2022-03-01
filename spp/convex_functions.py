@@ -5,11 +5,11 @@ class ConvexFunction():
 
     def __call__(self, x):
 
-        if self.D is not None and self.D.contains(x):
-            return self._evaluate(x)
-        else:
+        if self.D is not None and not self.D.contains(x):
             return np.inf
-
+        else:
+            return self._evaluate(x)
+            
     def add_perspective_constraint(self, prog, slack, scale, x):
 
         cost = self._add_perspective_constraint(prog, slack, scale, x)
