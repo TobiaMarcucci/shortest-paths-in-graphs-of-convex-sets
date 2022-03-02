@@ -56,7 +56,7 @@ class Singleton(ConvexSet):
         self._dimension = self.center.size
 
     def contains(self, x):
-        return np.isclose(self.center, x)
+        return np.allclose(self.center, x)
 
     def translate(self, x):
         self._center + x
