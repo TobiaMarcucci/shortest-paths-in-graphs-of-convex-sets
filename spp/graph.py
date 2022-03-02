@@ -114,10 +114,12 @@ class GraphOfConvexSets():
         return [self.vertices.index(vertex) for vertex in vertices]
 
     def incoming_edges(self, vertex):
+        assert vertex in self.vertices
         edges = [edge for edge in self.edges if edge[1] == vertex]
         return edges, self.edge_indices(edges)
 
     def outgoing_edges(self, vertex):
+        assert vertex in self.vertices
         edges = [edge for edge in self.edges if edge[0] == vertex]
         return edges, self.edge_indices(edges)
 
