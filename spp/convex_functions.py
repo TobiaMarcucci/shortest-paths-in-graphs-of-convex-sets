@@ -9,6 +9,13 @@ class ConvexFunction():
             return np.inf
         else:
             return self._evaluate(x)
+
+    def add_as_cost(self, prog, x):
+
+        domain = self.enforce_domain(prog, 1, x)
+        cost = self._add_as_cost(prog, x)
+
+        return cost, domain
             
     def add_perspective_constraint(self, prog, slack, scale, x):
 
@@ -37,6 +44,10 @@ class Constant(ConvexFunction):
 
         return prog.AddLinearConstraint(slack >= self.c * scale)
 
+    def _add_as_cost(self, prog, x):
+
+        return prog.AddLinearCost(self.c)
+
 class TwoNorm(ConvexFunction):
     """Function of the form ||H x||_2 for x in D, where D is a ConvexSet."""
 
@@ -53,6 +64,12 @@ class TwoNorm(ConvexFunction):
 
         Hx = self.H.dot(x)
         return prog.AddLorentzConeConstraint(slack, Hx.dot(Hx))
+
+    def _add_as_cost(self, prog, x):
+
+        slack = prog.NewContinuousVariables(1)
+        self._add_perspective_constraint(self, prog, slack, 1, x)
+        return prog.AddLinearCost(slack)
 
 class SquaredTwoNorm(ConvexFunction):
     """Function of the form ||H x||_2^2 for x in D, where D is a ConvexSet."""
@@ -71,3 +88,8 @@ class SquaredTwoNorm(ConvexFunction):
 
         Hx = self.H.dot(x)
         return prog.AddRotatedLorentzConeConstraint(slack, scale, Hx.dot(Hx))
+
+    def _add_as_cost(self, prog, x):
+
+        Hx = self.H.dot(x)
+        return prog.AddQuadraticCost(Hx.dot(Hx))
