@@ -1,6 +1,5 @@
 import numpy as np
-from pydrake.all import MathematicalProgram, MosekSolver, GurobiSolver, eq, ge
-from pydrake.solvers.mathematicalprogram import CommonSolverOption, SolverOptions
+from pydrake.all import MathematicalProgram, MosekSolver, eq, SolverOptions, CommonSolverOption
 
 class ShortestPathVariables():
 
@@ -52,13 +51,13 @@ class ShortestPathVariables():
 
 class ShortestPathConstraints():
 
-    def __init__(self, cons, sp_cons, sp_y, sp_z, obj=None):
+    def __init__(self, cons, sp_cons, obj=None):
 
+        # not all constraints of the spp are stored here
+        # only the ones we care of (the linear ones)
         self.conservation = cons
         self.spatial_conservation = sp_cons
         self.objective = obj
-        self.spatial_y = sp_y
-        self.spatial_z = sp_z
 
     @staticmethod
     def populate_program(prog, graph, vars):
@@ -66,10 +65,6 @@ class ShortestPathConstraints():
         # containers for the constraints we want to keep track of
         cons = []
         sp_cons = []
-        sp_y = []
-        sp_z = []
-
-        prog.AddLinearConstraint(ge(vars.phi, 0))
 
         for vertex, set in graph.sets.items():
 
@@ -94,34 +89,16 @@ class ShortestPathConstraints():
                     residual = y_out - z_in
                     sp_cons.append(prog.AddLinearConstraint(eq(residual, 0)))
 
-        # spatial nonnegativity
+        # spatial nonnegativity (not stored)
         for k, edge in enumerate(graph.edges):
-
-            yu = prog.NewContinuousVariables(graph.dimension)
-            phiu = prog.NewContinuousVariables(1)[0]
-            sp_y.append(
-                prog.AddLinearConstraint(eq(
-                    np.append(vars.y[k], vars.phi[k]),
-                    np.append(yu, phiu)
-                    ))
-                )
-            graph.sets[edge[0]].add_perspective_constraint(prog, phiu, yu)
-
-            zv = prog.NewContinuousVariables(graph.dimension)
-            phiv = prog.NewContinuousVariables(1)[0]
-            sp_z.append(
-                prog.AddLinearConstraint(eq(
-                    np.append(vars.z[k], vars.phi[k]),
-                    np.append(zv, phiv)
-                    ))
-                )
-            graph.sets[edge[1]].add_perspective_constraint(prog, phiv, zv)
+            graph.sets[edge[0]].add_perspective_constraint(prog, vars.phi[k], vars.y[k])
+            graph.sets[edge[1]].add_perspective_constraint(prog, vars.phi[k], vars.z[k])
 
             # slack constraints for the objetive (not stored)
             yz = np.concatenate((vars.y[k], vars.z[k]))
             graph.lengths[edge].add_perspective_constraint(prog, vars.l[k], vars.phi[k], yz)
 
-        return ShortestPathConstraints(cons, sp_cons, sp_y, sp_z)
+        return ShortestPathConstraints(cons, sp_cons)
 
     @staticmethod
     def from_result(result, constraints):
@@ -135,11 +112,9 @@ class ShortestPathConstraints():
         cons = get_dual(result, constraints.conservation)
         np.concatenate([cons,[0]])
         sp_cons = get_dual(result, constraints.spatial_conservation)
-        sp_y = get_dual(result, constraints.spatial_y)
-        sp_z = get_dual(result, constraints.spatial_z)
         obj = cons[0]
 
-        return ShortestPathConstraints(cons, sp_cons, sp_y, sp_z, obj)
+        return ShortestPathConstraints(cons, sp_cons, obj)
 
 class ShortestPathSolution():
 
@@ -164,25 +139,14 @@ class ShortestPathProblem():
 
     def solve(self):
 
-        # import mosek
-        
         options = SolverOptions()
         options.SetOption(CommonSolverOption.kPrintToConsole, 1)
-
+        options.SetOption(MosekSolver.id(), "MSK_DPAR_INTPNT_CO_TOL_REL_GAP", 1e-3)
+        # options.SetOption(MosekSolver.id(), "MSK_IPAR_INTPNT_SOLVE_FORM", 1)
+        # options.SetOption(MosekSolver.id(), "MSK_DPAR_MIO_TOL_REL_GAP", 1e-3)
+        # options.SetOption(GurobiSolver.id(), "MIPGap", 1e-3)
         solver = MosekSolver()
-        # self.prog.SetSolverOption(solver.solver_id(), 'MSK_IPAR_INTPNT_SOLVE_FORM', mosek.solveform.primal)
-        # self.prog.SetSolverOption(solver.solver_id(), 'intpntCoTolDfeas', 1.0e-8)
-        self.prog.SetSolverOption(solver.solver_id(), "MSK_DPAR_INTPNT_CO_TOL_DFEAS", 1e-12)
-        self.prog.SetSolverOption(solver.solver_id(), "MSK_DPAR_INTPNT_CO_TOL_INFEAS", 1e-12)
-        self.prog.SetSolverOption(solver.solver_id(), "MSK_DPAR_INTPNT_CO_TOL_MU_RED", 1e-12)
-        self.prog.SetSolverOption(solver.solver_id(), "MSK_DPAR_INTPNT_CO_TOL_PFEAS", 1e-12)
-        self.prog.SetSolverOption(solver.solver_id(), "MSK_DPAR_INTPNT_CO_TOL_REL_GAP", 1e-12)
-        result = solver.Solve(self.prog, solver_options=options)
-
-        # solver = GurobiSolver()
-        # self.prog.SetSolverOption(solver.solver_id(), 'QCPDual', 1)
-        # result = solver.Solve(self.prog, solver_options=options)
-
+        result = solver.Solve(self.prog, None, options)
         cost = result.get_optimal_cost()
         time = result.get_solver_details().optimizer_time
         primal = ShortestPathVariables.from_result(result, self.vars)

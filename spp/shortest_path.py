@@ -77,12 +77,12 @@ class ShortestPathConstraints():
             phi_out = sum(vars.phi[edges_out])
 
             delta_sv = 1 if vertex == graph.source else 0
-            delta_tv = 1 if vertex == graph.target else 0
 
             # conservation of flow
             if len(edges_in) > 0 or len(edges_out) > 0:
-                residual = phi_out + delta_tv - phi_in - delta_sv
-                cons.append(prog.AddLinearConstraint(residual == 0))
+                if vertex != graph.target:
+                    residual = phi_out - phi_in - delta_sv
+                    cons.append(prog.AddLinearConstraint(residual == 0))
 
                 # spatial conservation of flow
                 if vertex not in (graph.source, graph.target):
@@ -92,6 +92,7 @@ class ShortestPathConstraints():
                     sp_cons.append(prog.AddLinearConstraint(eq(residual, 0)))
 
             # degree constraints
+            delta_tv = 1 if vertex == graph.target else 0
             if len(edges_out) > 0:
                 residual = phi_out + delta_tv - 1
                 deg.append(prog.AddLinearConstraint(residual <= 0))
@@ -149,9 +150,10 @@ class ShortestPathConstraints():
             return dual
 
         cons = get_dual(result, constraints.conservation)
+        np.concatenate([cons,[0]])
         deg = get_dual(result, constraints.degree)
         sp_cons = get_dual(result, constraints.spatial_conservation)
-        obj = cons[0] - cons[-1] + sum(deg[:-1])
+        obj = cons[0] + sum(deg[:-1])
 
         return ShortestPathConstraints(cons, deg, sp_cons, obj)
 

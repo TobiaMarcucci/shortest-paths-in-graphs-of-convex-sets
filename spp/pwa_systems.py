@@ -3,7 +3,8 @@ import scipy as sp
 from spp.convex_sets import Singleton, Polyhedron, CartesianProduct
 from spp.convex_functions import Constant, SquaredTwoNorm
 from spp.graph import GraphOfConvexSets
-from spp.shortest_path import ShortestPathProblem
+from spp.shortest_path_acyclic import ShortestPathProblem
+from pydrake.all import MathematicalProgram, MosekSolver, eq
 
 class PieceWiseAffineSystem():
     '''Dynamical system of the form
@@ -41,7 +42,60 @@ class ShortestPathRegulator():
         graph = self._construct_graph()
         self.spp = ShortestPathProblem(graph, relaxation)
 
+    def _edge_preprocessing(self):
+
+        # source
+        Es = []
+        for i, D in enumerate(self.pwa.domains):
+            prog = MathematicalProgram()
+            z = prog.NewContinuousVariables(self.pwa.nz)
+            u = prog.NewContinuousVariables(self.pwa.nu)
+            prog.AddLinearEqualityConstraint(z, self.z1)
+            D.add_membership_constraint(prog, np.concatenate((z, u)))
+            result = MosekSolver().Solve(prog)
+            if result.is_success():
+                Es.append(i)
+
+        # vertices for time steps k = 1, ..., K - 1
+        Ek = []
+        for i, Di in enumerate(self.pwa.domains):
+            for j, Dj in enumerate(self.pwa.domains):
+                prog = MathematicalProgram()
+                zi = prog.NewContinuousVariables(self.pwa.nz)
+                zj = prog.NewContinuousVariables(self.pwa.nz)
+                ui = prog.NewContinuousVariables(self.pwa.nu)
+                uj = prog.NewContinuousVariables(self.pwa.nu)
+                Ai, Bi, ci = self.pwa.dynamics[i]
+                res = zj - Ai.dot(zi) - Bi.dot(ui) - ci
+                prog.AddLinearEqualityConstraint(res, np.zeros(self.pwa.nz))
+                Di.add_membership_constraint(prog, np.concatenate((zi, ui)))
+                Dj.add_membership_constraint(prog, np.concatenate((zj, uj)))
+                result = MosekSolver().Solve(prog)
+                if result.is_success():
+                    Ek.append((i, j))
+
+        # target
+        Et = []
+        for i, D in enumerate(self.pwa.domains):
+            prog = MathematicalProgram()
+            zi = prog.NewContinuousVariables(self.pwa.nz)
+            zj = prog.NewContinuousVariables(self.pwa.nz)
+            ui = prog.NewContinuousVariables(self.pwa.nu)
+            D.add_membership_constraint(prog, np.concatenate((zi, ui)))
+            Ai, Bi, ci = self.pwa.dynamics[i]
+            res = zj - Ai.dot(zi) - Bi.dot(ui) - ci
+            prog.AddLinearEqualityConstraint(res, np.zeros(self.pwa.nz))
+            self.Z.add_membership_constraint(prog, zj)
+            result = MosekSolver().Solve(prog)
+            if result.is_success():
+                Et.append(i)
+        
+        return Es, Ek, Et
+
     def _construct_graph(self):
+
+        # eliminate redundant edges
+        Es, Ek, Et = self._edge_preprocessing()
 
         # initialize graph
         graph = GraphOfConvexSets()
@@ -62,7 +116,7 @@ class ShortestPathRegulator():
         graph.set_target(self.K)
 
         # time step zero
-        for i in range(self.pwa.nm):
+        for i in Es:
 
             # force initial conditions
             I = np.eye(self.pwa.nz)
@@ -83,13 +137,12 @@ class ShortestPathRegulator():
         # edges for time steps k = 1, ..., K - 2
         H = sp.linalg.block_diag(self.Q, self.R, np.zeros((self.pwa.nz + self.pwa.nu,) * 2))
         for k in range(1, self.K - 1):
-            for i in range(self.pwa.nm):
-                for j in range(self.pwa.nm):
-                    graph.add_edge((k, i), (k + 1, j), SquaredTwoNorm(H, D[i]))
+            for i, j in Ek:
+                graph.add_edge((k, i), (k + 1, j), SquaredTwoNorm(H, D[i]))
 
         # edges for time step K - 1
         HT = sp.linalg.block_diag(self.Q, self.R, self.S, np.zeros((self.pwa.nu, self.pwa.nu)))
-        for i in range(self.pwa.nm):
+        for i in Et:
             graph.add_edge((self.K - 1, i), (self.K), SquaredTwoNorm(HT, D[i]))
 
         return graph
