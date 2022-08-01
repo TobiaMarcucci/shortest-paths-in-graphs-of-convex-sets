@@ -3,12 +3,11 @@ from pydrake.all import MathematicalProgram, GurobiSolver, MosekSolver, eq, Solv
 
 class ShortestPathVariables():
 
-    def __init__(self, phi, y, z, l, x=None):
+    def __init__(self, phi, y, z, x=None):
 
         self.phi = phi
         self.y = y
         self.z = z
-        self.l = l
         self.x = x
 
     def reconstruct_x(self, graph):
@@ -35,9 +34,8 @@ class ShortestPathVariables():
         phi = phi_type(graph.n_edges)
         y = prog.NewContinuousVariables(graph.n_edges, graph.dimension)
         z = prog.NewContinuousVariables(graph.n_edges, graph.dimension)
-        l = prog.NewContinuousVariables(graph.n_edges)
 
-        return ShortestPathVariables(phi, y, z, l)
+        return ShortestPathVariables(phi, y, z)
 
     @staticmethod
     def from_result(result, vars):
@@ -45,9 +43,8 @@ class ShortestPathVariables():
         phi = result.GetSolution(vars.phi)
         y = result.GetSolution(vars.y)
         z = result.GetSolution(vars.z)
-        l = result.GetSolution(vars.l)
 
-        return ShortestPathVariables(phi, y, z, l)
+        return ShortestPathVariables(phi, y, z)
 
 class ShortestPathConstraints():
 
@@ -94,10 +91,6 @@ class ShortestPathConstraints():
             graph.sets[edge[0]].add_perspective_constraint(prog, vars.phi[k], vars.y[k])
             graph.sets[edge[1]].add_perspective_constraint(prog, vars.phi[k], vars.z[k])
 
-            # slack constraints for the objetive (not stored)
-            yz = np.concatenate((vars.y[k], vars.z[k]))
-            graph.lengths[edge].add_perspective_constraint(prog, vars.l[k], vars.phi[k], yz)
-
         return ShortestPathConstraints(cons, sp_cons)
 
     @staticmethod
@@ -135,18 +128,21 @@ class ShortestPathProblem():
         self.prog = MathematicalProgram()
         self.vars = ShortestPathVariables.populate_program(self.prog, graph, relaxation)
         self.constraints = ShortestPathConstraints.populate_program(self.prog, graph, self.vars)
-        self.prog.AddLinearCost(sum(self.vars.l))
+        for k, edge in enumerate(self.graph.edges):
+            yz = np.concatenate((self.vars.y[k], self.vars.z[k]))
+            self.graph.lengths[edge].enforce_domain(self.prog, self.vars.phi[k], yz)
+            self.graph.lengths[edge].add_as_cost(self.prog, yz)
 
     def solve(self):
 
         options = SolverOptions()
         options.SetOption(CommonSolverOption.kPrintToConsole, 1)
-        options.SetOption(MosekSolver.id(), "MSK_DPAR_INTPNT_CO_TOL_REL_GAP", 1e-3)
+        # options.SetOption(MosekSolver.id(), "MSK_DPAR_INTPNT_CO_TOL_REL_GAP", 1e-3)
         # options.SetOption(MosekSolver.id(), "MSK_IPAR_INTPNT_SOLVE_FORM", 1)
         # options.SetOption(MosekSolver.id(), "MSK_DPAR_MIO_TOL_REL_GAP", 1e-3)
         # options.SetOption(GurobiSolver.id(), "MIPGap", 1e-3)
-        solver = MosekSolver()
-        # solver = GurobiSolver()
+        # solver = MosekSolver()
+        solver = GurobiSolver()
         result = solver.Solve(self.prog, None, options)
         cost = result.get_optimal_cost()
         time = result.get_solver_details().optimizer_time

@@ -34,16 +34,26 @@ u_min = - u_max
 # time steps
 K = 20
 
-# weight matrices (*2 to cancel out the 1/2 in the controller code)
-Q = np.diag([
+# weight matrices
+from scipy.linalg import sqrtm
+Q = sqrtm(np.diag([ # TwoNormSquared
     1., 1., .01,
     1., 1.,
     1., 1., .01,
     1., 1.
-])*2.
-R = np.diag([
+]))
+R = sqrtm(np.diag([ # TwoNormSquared
     .01, .001
-])*2.
+]))
+# Q = 2 * np.diag([ # OneNorm
+#     1., 1., .01,
+#     1., 1.,
+#     1., 1., .01,
+#     1., 1.
+# ])
+# R = 2 * np.diag([ # OneNorm
+#     .01, .001
+# ])
 S = np.zeros((10, 10))
 cost_matrices = (Q, R, S)
 

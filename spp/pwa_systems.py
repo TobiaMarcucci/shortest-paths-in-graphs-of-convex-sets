@@ -1,7 +1,7 @@
 import numpy as np
 import scipy as sp
 from spp.convex_sets import Singleton, Polyhedron, CartesianProduct
-from spp.convex_functions import Constant, SquaredTwoNorm
+from spp.convex_functions import Constant, OneNorm, SquaredTwoNorm
 from spp.graph import GraphOfConvexSets
 from spp.shortest_path_acyclic import ShortestPathProblem
 from pydrake.all import MathematicalProgram, MosekSolver, eq
