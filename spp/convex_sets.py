@@ -33,7 +33,7 @@ class ConvexSet():
     def plot(self, **kwargs):
         if self.dimension != 2:
             raise NotImplementedError
-        options = {'facecolor':'lightcyan', 'edgecolor':'k', 'zorder':1}
+        options = {'facecolor':'mintcream', 'edgecolor':'k', 'zorder':1}
         options.update(kwargs)
         self._plot(**options)
 

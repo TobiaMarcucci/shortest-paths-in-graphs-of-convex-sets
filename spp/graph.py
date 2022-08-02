@@ -140,7 +140,7 @@ class GraphOfConvexSets():
 
     def draw_edges(self, **kwargs):
         options = {'color':'k', 'zorder':2,
-            'arrowstyle':'simple, head_width=5, head_length=12'}
+            'arrowstyle':'->, head_width=3, head_length=8'}
         options.update(kwargs)
         for edge in self.edges:
             tail = self.sets[edge[0]].center

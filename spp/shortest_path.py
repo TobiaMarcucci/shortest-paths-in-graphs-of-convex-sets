@@ -70,11 +70,13 @@ class ShortestPathConstraints():
 
         for vertex, set in graph.sets.items():
 
-            edges_in = graph.incoming_edges(vertex)[1]
-            edges_out = graph.outgoing_edges(vertex)[1]
+            edges_in, k_in = graph.incoming_edges(vertex)
+            edges_out, k_out = graph.outgoing_edges(vertex)
 
-            phi_in = sum(vars.phi[edges_in])
-            phi_out = sum(vars.phi[edges_out])
+            phi_in = sum(vars.phi[k_in])
+            phi_out = sum(vars.phi[k_out])
+            y_out = sum(vars.y[k_out])
+            z_in = sum(vars.z[k_in])
 
             delta_sv = 1 if vertex == graph.source else 0
             delta_tv = 1 if vertex == graph.target else 0
@@ -86,8 +88,6 @@ class ShortestPathConstraints():
 
                 # spatial conservation of flow
                 if vertex not in (graph.source, graph.target):
-                    y_out = sum(vars.y[edges_out])
-                    z_in = sum(vars.z[edges_in])
                     residual = y_out - z_in
                     sp_cons.append(prog.AddLinearConstraint(eq(residual, 0)))
 
@@ -95,6 +95,17 @@ class ShortestPathConstraints():
             if len(edges_out) > 0:
                 residual = phi_out + delta_tv - 1
                 deg.append(prog.AddLinearConstraint(residual <= 0))
+
+            # subtour elimination for two-cycles
+            if vertex not in [graph.source, graph.target]:
+                for edge1, k1 in zip(edges_in, k_in):
+                    edge2 = edge1[::-1]
+                    if edge2 in edges_out:
+                        k2 = k_out[edges_out.index(edge2)]
+                        phi_v = phi_in - vars.phi[k1] - vars.phi[k2]
+                        prog.AddLinearConstraint(phi_v >= 0)
+                        graph.sets[vertex].add_perspective_constraint(prog,
+                            phi_v, z_in - vars.z[k1] - vars.y[k2])
 
         # spatial nonnegativity (not stored)
         for k, edge in enumerate(graph.edges):
@@ -104,38 +115,6 @@ class ShortestPathConstraints():
             # slack constraints for the objetive (not stored)
             yz = np.concatenate((vars.y[k], vars.z[k]))
             graph.lengths[edge].add_perspective_constraint(prog, vars.l[k], vars.phi[k], yz)
-
-            # # subtour elimination for 2-cycles
-            # if graph.source not in edge and graph.target not in edge:
-            #     for f in graph.edges[k+1:]:
-            #         if edge[::-1] == f:
-
-            #             u_in = graph.incoming_edges(edge[0])[1]
-            #             v_in = graph.incoming_edges(edge[1])[1]
-
-            #             l = graph.edges.index(f)
-            #             phi_e = vars.phi[k]
-            #             phi_f = vars.phi[l]
-
-            #             phi_u = sum(vars.phi[u_in]) - phi_e - phi_f
-            #             phi_v = sum(vars.phi[v_in]) - phi_e - phi_f
-
-            #             prog.AddLinearConstraint(phi_u >= 0)
-            #             prog.AddLinearConstraint(phi_v >= 0)
-
-            #             z_u = sum(vars.z[u_in])
-            #             z_v = sum(vars.z[v_in])
-
-            #             graph.sets[edge[0]].add_perspective_constraint(
-            #                 prog,
-            #                 phi_u,
-            #                 z_u - vars.y[k] - vars.z[l]
-            #                 )
-            #             graph.sets[edge[1]].add_perspective_constraint(
-            #                 prog,
-            #                 phi_v,
-            #                 z_v - vars.z[k] - vars.y[l]
-            #                 )
 
         return ShortestPathConstraints(cons, deg, sp_cons)
 
