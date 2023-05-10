@@ -1,6 +1,5 @@
 import numpy as np
 from pydrake.all import MathematicalProgram, MosekSolver, eq
-
 class ShortestPathVariables():
 
     def __init__(self, phi, y, z, l, x=None):
@@ -61,7 +60,7 @@ class ShortestPathConstraints():
         self.objective = obj
 
     @staticmethod
-    def populate_program(prog, graph, vars):
+    def populate_program(prog, graph, vars, cyclic=True):
 
         # containers for the constraints we want to keep track of
         cons = []
@@ -92,12 +91,12 @@ class ShortestPathConstraints():
                     sp_cons.append(prog.AddLinearConstraint(eq(residual, 0)))
 
             # degree constraints
-            if len(edges_out) > 0:
+            if cyclic and len(edges_out) > 0:
                 residual = phi_out + delta_tv - 1
                 deg.append(prog.AddLinearConstraint(residual <= 0))
 
             # subtour elimination for two-cycles
-            if vertex not in [graph.source, graph.target]:
+            if cyclic and vertex not in [graph.source, graph.target]:
                 for edge1, k1 in zip(edges_in, k_in):
                     edge2 = edge1[::-1]
                     if edge2 in edges_out:
@@ -145,14 +144,15 @@ class ShortestPathSolution():
 
 class ShortestPathProblem():
 
-    def __init__(self, graph, relaxation=False):
+    def __init__(self, graph, relaxation=False, cyclic=True):
 
         self.graph = graph
         self.relaxation = relaxation
+        self.cyclic = cyclic
 
         self.prog = MathematicalProgram()
         self.vars = ShortestPathVariables.populate_program(self.prog, graph, relaxation)
-        self.constraints = ShortestPathConstraints.populate_program(self.prog, graph, self.vars)
+        self.constraints = ShortestPathConstraints.populate_program(self.prog, graph, self.vars, cyclic)
         self.prog.AddLinearCost(sum(self.vars.l))
 
     def solve(self):
@@ -162,6 +162,7 @@ class ShortestPathProblem():
         time = result.get_solver_details().optimizer_time
         primal = ShortestPathVariables.from_result(result, self.vars)
         primal.reconstruct_x(self.graph)
-        dual = ShortestPathConstraints.from_result(result, self.constraints) if self.relaxation else None
+        # dual = ShortestPathConstraints.from_result(result, self.constraints) if self.relaxation else None
+        dual = None
 
         return ShortestPathSolution(cost, time, primal, dual)

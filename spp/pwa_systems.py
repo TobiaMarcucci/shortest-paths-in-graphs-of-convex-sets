@@ -39,7 +39,7 @@ class ShortestPathRegulator():
         self.Z = Z
         self.Q, self.R, self.S = cost_matrices
         graph = self._construct_graph()
-        self.spp = ShortestPathProblem(graph, relaxation)
+        self.spp = ShortestPathProblem(graph, relaxation, cyclic=False)
 
     def _construct_graph(self):
 

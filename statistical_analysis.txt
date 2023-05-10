@@ -4,29 +4,28 @@ Nominal, relaxation gap:
          median -0.0
          max 0.0034
      Norm: E2
-         mean 0.0016
+         mean 0.0014
          median 0.0
-         max 0.0206
+         max 0.02
 Nominal, time:
      Relaxation: 0
          Norm: E
-             mean 0.1003
-             median 0.0827
-             max 0.4278
+             mean 0.107
+             median 0.0868
+             max 0.5026
          Norm: E2
-             mean 0.1322
-             median 0.0741
-             max 0.6157
+             mean 0.1335
+             median 0.0793
+             max 0.669
      Relaxation: 1
          Norm: E
-             mean 0.0222
-             median 0.0208
-             max 0.0717
+             mean 0.0224
+             median 0.0212
+             max 0.0729
          Norm: E2
-             mean 0.0207
-             median 0.0196
-             max 0.0406
-
+             mean 0.0216
+             median 0.021
+             max 0.045
 
 d, relaxation gap:
      Norm: E
@@ -34,29 +33,28 @@ d, relaxation gap:
          median -0.0
          max 0.0021
      Norm: E2
-         mean 0.0964
-         median 0.0745
-         max 0.2891
+         mean 0.0911
+         median 0.0633
+         max 0.2862
 d, time:
      Relaxation: 0
          Norm: E
-             mean 0.7339
-             median 0.5486
-             max 5.2627
+             mean 0.7877
+             median 0.5709
+             max 5.8127
          Norm: E2
-             mean 8.2762
-             median 2.2852
-             max 133.312
+             mean 8.7384
+             median 2.4696
+             max 148.0636
      Relaxation: 1
          Norm: E
-             mean 0.1189
-             median 0.1105
-             max 0.2935
+             mean 0.1263
+             median 0.116
+             max 0.4003
          Norm: E2
-             mean 0.0883
-             median 0.088
-             max 0.1471
-
+             mean 0.0892
+             median 0.087
+             max 0.1729
 
 nE, relaxation gap:
      Norm: E
@@ -64,29 +62,28 @@ nE, relaxation gap:
          median -0.0
          max 0.0124
      Norm: E2
-         mean 0.1458
-         median 0.1403
-         max 0.3293
+         mean 0.1167
+         median 0.1089
+         max 0.249
 nE, time:
      Relaxation: 0
          Norm: E
-             mean 2.3939
-             median 1.6527
-             max 12.7364
+             mean 3.5569
+             median 2.4838
+             max 13.6168
          Norm: E2
-             mean 33.4053
-             median 22.5364
-             max 197.1761
+             mean 34.7257
+             median 24.5724
+             max 203.2021
      Relaxation: 1
          Norm: E
-             mean 0.3246
-             median 0.3109
-             max 0.7493
+             mean 0.508
+             median 0.4952
+             max 1.0326
          Norm: E2
-             mean 0.2139
-             median 0.2054
-             max 0.3198
-
+             mean 0.4276
+             median 0.4135
+             max 0.6953
 
 nV nE, relaxation gap:
      Norm: E
@@ -94,29 +91,28 @@ nV nE, relaxation gap:
          median 0.0
          max 0.0025
      Norm: E2
-         mean 0.0018
+         mean 0.0014
          median 0.0
          max 0.0528
 nV nE, time:
      Relaxation: 0
          Norm: E
-             mean 1.2401
-             median 1.1395
-             max 4.3175
+             mean 1.3155
+             median 1.1537
+             max 4.7318
          Norm: E2
-             mean 1.2469
-             median 1.0629
-             max 5.2993
+             mean 1.2705
+             median 1.1098
+             max 5.1592
      Relaxation: 1
          Norm: E
-             mean 0.1502
-             median 0.1336
-             max 0.2786
+             mean 0.1578
+             median 0.1437
+             max 0.3262
          Norm: E2
-             mean 0.1434
-             median 0.1275
-             max 0.3067
-
+             mean 0.1497
+             median 0.1309
+             max 0.3169
 
 vol, relaxation gap:
      Norm: E
@@ -124,25 +120,25 @@ vol, relaxation gap:
          median -0.0
          max 0.0056
      Norm: E2
-         mean 0.0092
+         mean 0.0073
          median 0.0
-         max 0.0908
+         max 0.0767
 vol, time:
      Relaxation: 0
          Norm: E
-             mean 0.139
-             median 0.1266
-             max 0.6836
+             mean 0.1395
+             median 0.1184
+             max 0.7407
          Norm: E2
-             mean 0.2447
-             median 0.0871
-             max 0.8729
+             mean 0.2451
+             median 0.0851
+             max 0.8685
      Relaxation: 1
          Norm: E
-             mean 0.0241
-             median 0.0226
-             max 0.0536
+             mean 0.0242
+             median 0.0224
+             max 0.085
          Norm: E2
-             mean 0.0223
-             median 0.0207
-             max 0.0532
+             mean 0.0224
+             median 0.0206
+             max 0.0533
