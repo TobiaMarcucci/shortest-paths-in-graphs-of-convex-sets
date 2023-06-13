@@ -17,6 +17,23 @@ class ConvexSet():
     def translate(self, x):
         raise NotImplementedError
 
+    def bounding_box(self):
+        x_min = np.zeros(self._dimension)
+        x_max = np.zeros(self._dimension)
+        for i in range(self._dimension):
+            prog = MathematicalProgram()
+            x = prog.NewContinuousVariables(self._dimension)
+            self.add_membership_constraint(prog, x)
+            prog.AddLinearCost(x[i])
+            result = MosekSolver().Solve(prog)
+            x_opt = result.GetSolution(x)
+            x_min[i] = x_opt[i]
+            prog.AddLinearCost(-2*x[i])
+            result = MosekSolver().Solve(prog)
+            x_opt = result.GetSolution(x)
+            x_max[i] = x_opt[i]
+        return Polyhedron.from_bounds(x_min, x_max)
+
     def scale(self, s):
         assert s > 0
         return self._scale(s)
