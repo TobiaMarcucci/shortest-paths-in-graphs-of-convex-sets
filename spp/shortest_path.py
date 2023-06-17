@@ -60,7 +60,7 @@ class ShortestPathConstraints():
         self.objective = obj
 
     @staticmethod
-    def populate_program(prog, graph, vars, cyclic=True):
+    def populate_program(prog, graph, vars):
 
         # containers for the constraints we want to keep track of
         cons = []
@@ -91,20 +91,20 @@ class ShortestPathConstraints():
                     sp_cons.append(prog.AddLinearConstraint(eq(residual, 0)))
 
             # degree constraints
-            if cyclic and len(edges_out) > 0:
+            if len(edges_out) > 0:
                 residual = phi_out + delta_tv - 1
                 deg.append(prog.AddLinearConstraint(residual <= 0))
 
-            # subtour elimination for two-cycles
-            if cyclic and vertex not in [graph.source, graph.target]:
-                for edge1, k1 in zip(edges_in, k_in):
-                    edge2 = edge1[::-1]
-                    if edge2 in edges_out:
-                        k2 = k_out[edges_out.index(edge2)]
-                        phi_v = phi_in - vars.phi[k1] - vars.phi[k2]
-                        prog.AddLinearConstraint(phi_v >= 0)
-                        graph.sets[vertex].add_perspective_constraint(prog,
-                            phi_v, z_in - vars.z[k1] - vars.y[k2])
+            # # subtour elimination for two-cycles
+            # if cyclic and vertex not in [graph.source, graph.target]:
+            #     for edge1, k1 in zip(edges_in, k_in):
+            #         edge2 = edge1[::-1]
+            #         if edge2 in edges_out:
+            #             k2 = k_out[edges_out.index(edge2)]
+            #             phi_v = phi_in - vars.phi[k1] - vars.phi[k2]
+            #             prog.AddLinearConstraint(phi_v >= 0)
+            #             graph.sets[vertex].add_perspective_constraint(prog,
+            #                 phi_v, z_in - vars.z[k1] - vars.y[k2])
 
         # spatial nonnegativity (not stored)
         for k, edge in enumerate(graph.edges):
@@ -144,15 +144,14 @@ class ShortestPathSolution():
 
 class ShortestPathProblem():
 
-    def __init__(self, graph, relaxation=False, cyclic=True):
+    def __init__(self, graph, relaxation=False):
 
         self.graph = graph
         self.relaxation = relaxation
-        self.cyclic = cyclic
 
         self.prog = MathematicalProgram()
         self.vars = ShortestPathVariables.populate_program(self.prog, graph, relaxation)
-        self.constraints = ShortestPathConstraints.populate_program(self.prog, graph, self.vars, cyclic)
+        self.constraints = ShortestPathConstraints.populate_program(self.prog, graph, self.vars)
         self.prog.AddLinearCost(sum(self.vars.l))
 
     def solve(self):
